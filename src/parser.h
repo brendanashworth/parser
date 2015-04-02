@@ -13,16 +13,13 @@ typedef int (http_header_cb) (http_parser_t*, const char* field, size_t len1,
 
 
 struct http_parser_s {
-    char* http_request_method;
-    int http_request_version_major;
-    int http_request_version_minor;
+    char* method;
+    int http_major;
+    int http_minor;
 
     /* CALLBACKS */
-    http_cb* on_message_begin;
     http_cb* on_headers_complete;
-    http_cb* on_message_complete;
     http_data_cb* on_url;
-    http_data_cb* on_status;
     http_data_cb* on_body;
     http_header_cb* on_header;
 };

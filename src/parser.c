@@ -22,7 +22,7 @@
 
 int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     // first: request method
-    parser->http_request_method = buf;
+    parser->method = buf;
 
     TAKE_UNTIL(buf, ' ');
 
@@ -41,12 +41,12 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     TAKE_CHAR(buf, '/');
 
     // major version
-    parser->http_request_version_major = PEEK(buf) - '0';
+    parser->http_major = PEEK(buf) - '0';
     TAKE_ANY(buf);
     TAKE_CHAR(buf, '.');
 
     // minor version
-    parser->http_request_version_minor = PEEK(buf) - '0';
+    parser->http_minor = PEEK(buf) - '0';
     TAKE_ANY(buf);
     TAKE_CHAR(buf, '\r');
     TAKE_CHAR(buf, '\n');

@@ -50,10 +50,10 @@ int main() {
     assert(result == 0);
 
     // asserts
-    assert(strcmp(parser.http_request_method, "GET") == 0);
+    assert(strcmp(parser.method, "GET") == 0);
 
-    assert(parser.http_request_version_major == 1);
-    assert(parser.http_request_version_minor == 1);
+    assert(parser.http_major == 1);
+    assert(parser.http_minor == 1);
 
     // 9 headers, plus other function calls
     assert(function_calls == 1 + 9);
