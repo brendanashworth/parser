@@ -97,11 +97,6 @@ error:
 
 void http_parser_init(http_parser_t* parser) {
     memset(parser, '\0', sizeof(http_parser_t));
-
-    parser->on_headers_complete = NULL;
-    parser->on_body = NULL;
-    parser->on_header = NULL;
-    parser->on_url = NULL;
 }
 
 #undef TAKE_ANY
