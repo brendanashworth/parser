@@ -1,6 +1,7 @@
 #include "src/parser.h"
 
-#include <string.h> // strcmp, strlen
+#include <stdlib.h> // free
+#include <string.h> // strcmp, strlen, strdup
 #include <assert.h> // assert
 
 char data[] = {
@@ -25,10 +26,14 @@ int main() {
     http_parser_init(&parser);
     parser.on_body = &cb_body;
 
-    int result = http_parser_execute(&parser, data, strlen(data));
+    char* buf = strdup(data);
+
+    int result = http_parser_execute(&parser, buf, strlen(buf));
     assert(result == 0);
 
     assert(called == 1);
+
+    free(buf);
 
     return 0;
 }
