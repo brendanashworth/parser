@@ -6,6 +6,8 @@ test:
 	test/test-parser-basic.o
 	$(CC) $(CC_FLAGS) src/parser.c -I. test/test-parser-error.c -o test/test-parser-error.o
 	test/test-parser-error.o
+	$(CC) $(CC_FLAGS) src/parser.c -I. test/test-parser-body.c -o test/test-parser-body.o
+	test/test-parser-body.o
 
 bench:
 	$(CC) $(CC_FLAGS) -I. -Ideps  src/parser.c benchmark/simple.c -o benchmark/simple.o

@@ -71,6 +71,18 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     TAKE_CHAR(buf, '\r');
     TAKE_CHAR(buf, '\n');
 
+    // body of request
+    if (PEEK(buf) != '\0') {
+        char* body = buf;
+
+        // go until we hit \0 (which is falsy)
+        for (; *buf; ++buf) {}
+        TAKE_CHAR(buf, '\0');
+
+        if (parser->on_body)
+            parser->on_body(parser, body, strnlen(body, len));
+    }
+
     return 0;
 
 call:
@@ -84,6 +96,7 @@ error:
 void http_parser_init(http_parser_t* parser) {
     memset(parser, '\0', sizeof(http_parser_t));
 
+    parser->on_body = NULL;
     parser->on_header = NULL;
     parser->on_url = NULL;
 }
