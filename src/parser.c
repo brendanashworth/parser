@@ -90,11 +90,8 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
 
     return 0;
 
-call:
-    // this is called when the parser reaches \0; it will call the callbacks
-    // provided
-
 error:
+
     return 1;
 }
 
