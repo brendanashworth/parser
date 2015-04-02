@@ -21,15 +21,16 @@ char data[] = {
 
 int main() {
 
+    int len = strlen(data);
+
     BENCHMARK(simple, 1)
 
         char* buf = strdup(data);
 
         http_parser_t parser;
-        memset(&parser, '\0', sizeof(http_parser_t));
+        http_parser_init(&parser);
 
-        http_parser_execute(&parser, buf, strlen(buf));
-        http_parser_cleanup(&parser);
+        http_parser_execute(&parser, buf, len);
 
     END_BENCHMARK(simple)
     BENCHMARK_SUMMARY(simple);

@@ -1,6 +1,6 @@
 #include "src/parser.h"
 
-#include <string.h> // memset
+#include <string.h> // strcmp, strlen
 #include <assert.h> // assert
 
 char data[] = {
@@ -19,22 +19,44 @@ char data[] = {
     "\r\n"
 };
 
+int function_calls = 0;
+
+int cb_url_path(http_parser_t* parser, const char* buf, size_t len) {
+    function_calls++;
+
+    assert(strcmp(buf, "/cookies") == 0);
+    assert(strlen(buf) == len);
+
+    return 0;
+}
+
+int cb_header(http_parser_t* parser, const char* field, size_t len1,
+        const char* value, size_t len2) {
+    function_calls++;
+
+    assert(strlen(field) == len1);
+    assert(strlen(value) == len2);
+
+    return 0;
+}
+
 int main() {
     http_parser_t parser;
-    memset(&parser, '\0', sizeof(http_parser_t));
+    http_parser_init(&parser);
+    parser.on_url = &cb_url_path;
+    parser.on_header = &cb_header;
 
     int result = http_parser_execute(&parser, data, strlen(data));
-
     assert(result == 0);
 
     // asserts
     assert(strcmp(parser.http_request_method, "GET") == 0);
-    assert(strcmp(parser.http_request_path, "/cookies") == 0);
 
     assert(parser.http_request_version_major == 1);
     assert(parser.http_request_version_minor == 1);
 
-    http_parser_cleanup(&parser);
+    // 9 headers, plus other function calls
+    assert(function_calls == 1 + 9);
 
     return 0;
 }

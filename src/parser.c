@@ -1,7 +1,7 @@
 #include "parser.h"
 
-#include <stdlib.h> // size_t, malloc
-#include <string.h> // strnlen
+#include <stdlib.h> // size_t
+#include <string.h> // strnlen, memset
 
 #define TAKE_ANY(ptr) ++ptr
 
@@ -27,13 +27,11 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     TAKE_UNTIL(buf, ' ');
 
     // second: request path
-    parser->http_request_path = buf;
-    
+    char* path = buf;
     TAKE_UNTIL(buf, ' ');
 
-    /*if (parser->on_url)
-        parser->on_url(parser, path, strnlen(path, len));*/
-    // on_url
+    if (parser->on_url)
+        parser->on_url(parser, path, strnlen(path, len));
 
     // third: HTTP/
     TAKE_CHAR(buf, 'H');
@@ -53,37 +51,25 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     TAKE_CHAR(buf, '\r');
     TAKE_CHAR(buf, '\n');
 
-    int headers = 0;
-    while (1) {
-        // ends with \r\n, end of headers
-        if (PEEK(buf) == '\r') {
-            TAKE_CHAR(buf, '\r');
-            TAKE_CHAR(buf, '\n');
-            break;
-        }
+    while (PEEK(buf) != '\r') {
+        char* field = buf;
 
-        ++headers; // parse another header
-
-        // allocate space for a new header
-        http_request_header_t* header = malloc(sizeof *header);
-
-        // reallocate with space for another header
-        parser->http_request_headers = realloc(parser->http_request_headers,
-                headers * sizeof(http_request_header_t*));
-
-        // append new header location to list of headers in parser
-        *(parser->http_request_headers + headers - 1) = header;
-
-        header->name = buf;
         TAKE_UNTIL(buf, ':');
         TAKE_CHAR(buf, ' ');
-        header->value = buf;
+
+        char* value = buf;
 
         TAKE_UNTIL(buf, '\r');
         TAKE_CHAR(buf, '\n');
+
+        if (parser->on_header)
+            parser->on_header(parser, field, strnlen(field, len),
+                    value, strnlen(value, len));
     }
 
-    parser->priv_headers = headers;
+    // ends with \r\n, end of request
+    TAKE_CHAR(buf, '\r');
+    TAKE_CHAR(buf, '\n');
 
     return 0;
 
@@ -93,20 +79,14 @@ call:
     // provided
 
 error:
-    // free everything; no point in keeping it
-    http_parser_cleanup(parser);
-
     return 1;
 }
 
-void http_parser_cleanup(http_parser_t* parser) {
-    int headers = parser->priv_headers;
+void http_parser_init(http_parser_t* parser) {
+    memset(parser, '\0', sizeof(http_parser_t));
 
-    for (; headers != 0; --headers)
-        free( *(parser->http_request_headers + headers - 1) );
-
-    free(parser->http_request_headers);
-    parser->http_request_headers = NULL;
+    parser->on_header = NULL;
+    parser->on_url = NULL;
 }
 
 #undef TAKE_ANY
