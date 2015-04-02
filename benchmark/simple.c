@@ -32,6 +32,8 @@ int main() {
 
         http_parser_execute(&parser, buf, len);
 
+        free(buf);
+
     END_BENCHMARK(simple)
     BENCHMARK_SUMMARY(simple);
 
