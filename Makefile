@@ -1,5 +1,5 @@
 CC ?= gcc
-CC_FLAGS ?= -g
+CC_FLAGS ?= -O3
 
 test:
 	$(CC) $(CC_FLAGS) src/parser.c -I. test/test-parser-basic.c -o test/test-parser-basic.o
