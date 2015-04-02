@@ -51,6 +51,7 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     TAKE_CHAR(buf, '\r');
     TAKE_CHAR(buf, '\n');
 
+    // parse in headers
     while (PEEK(buf) != '\r') {
         char* field = buf;
 
@@ -66,6 +67,10 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
             parser->on_header(parser, field, strnlen(field, len),
                     value, strnlen(value, len));
     }
+
+    // send end of headers
+    if (parser->on_headers_complete)
+        parser->on_headers_complete(parser);
 
     // ends with \r\n, end of request
     TAKE_CHAR(buf, '\r');
@@ -96,6 +101,7 @@ error:
 void http_parser_init(http_parser_t* parser) {
     memset(parser, '\0', sizeof(http_parser_t));
 
+    parser->on_headers_complete = NULL;
     parser->on_body = NULL;
     parser->on_header = NULL;
     parser->on_url = NULL;
