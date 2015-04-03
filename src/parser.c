@@ -81,7 +81,9 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
         char* body = buf;
 
         // go until we hit \0 (which is falsy)
-        for (; *buf; ++buf) {}
+        while (*buf)
+            ++buf;
+        
         TAKE_CHAR(buf, '\0');
 
         if (parser->on_body)
