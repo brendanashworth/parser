@@ -23,7 +23,7 @@ int main() {
 
     int len = strlen(data);
 
-    BENCHMARK(simple, 1)
+    BENCHMARK(simple, 10)
 
         char* buf = strdup(data);
 
