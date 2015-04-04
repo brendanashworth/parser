@@ -1,5 +1,7 @@
 #include "parser.h"
 
+#include "parse_method.c" // http__parse_method
+
 #include <stdlib.h> // size_t
 #include <string.h> // strnlen, memset
 
@@ -22,9 +24,11 @@
 
 int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
     // first: request method
-    parser->method = buf;
+    parser->method = http__parse_method(&buf);
+    if (parser->method == 0)
+        goto error;
 
-    TAKE_UNTIL(buf, ' ');
+    TAKE_CHAR(buf, ' ');
 
     // second: request path
     char* path = buf;
@@ -83,7 +87,7 @@ int http_parser_execute(http_parser_t* parser, char* buf, size_t len) {
         // go until we hit \0 (which is falsy)
         while (*buf)
             ++buf;
-        
+
         TAKE_CHAR(buf, '\0');
 
         if (parser->on_body)

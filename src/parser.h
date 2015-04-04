@@ -13,15 +13,27 @@ typedef int (http_header_cb) (http_parser_t*, const char* field, size_t len1,
 
 
 struct http_parser_s {
-    char* method;
-    int   http_major;
-    int   http_minor;
+    unsigned int method;
+    unsigned int http_major;
+    unsigned int http_minor;
 
     /* CALLBACKS */
     http_cb*        on_headers_complete;
     http_data_cb*   on_url;
     http_data_cb*   on_body;
     http_header_cb* on_header;
+};
+
+// See https://tools.ietf.org/html/rfc7231#section-4
+enum http_method {
+    HTTP_GET     = 1,
+    HTTP_HEAD    = 2,
+    HTTP_POST    = 3,
+    HTTP_PUT     = 4,
+    HTTP_DELETE  = 5,
+    HTTP_CONNECT = 6,
+    HTTP_OPTIONS = 7,
+    HTTP_TRACE   = 8,
 };
 
 /**

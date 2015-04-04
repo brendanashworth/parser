@@ -53,7 +53,7 @@ int main() {
     assert(result == 0);
 
     // asserts
-    assert(strcmp(parser.method, "GET") == 0);
+    assert(parser.method == HTTP_GET);
 
     assert(parser.http_major == 1);
     assert(parser.http_minor == 1);

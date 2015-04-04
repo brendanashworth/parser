@@ -34,6 +34,12 @@ int main() {
     TEST_PARSER_ERROR("GET /path HTTP/1.1\r\n");
     TEST_PARSER_ERROR("GET /path HTTP/1.1\r\n\r");
 
+    // methods
+    TEST_PARSER_ERROR("POS");
+    TEST_PARSER_ERROR("G3T /path HTTP/1.1\r\n\r\n");
+    TEST_PARSER_ERROR("put /path HTTP/1.1\r\n\r\n");
+    TEST_PARSER_ERROR("POSt /path HTTP/1.1\r\n\r\n");
+
     // with headers
     TEST_PARSER_ERROR(
         "GET / HTTP/1.1\r\n"
